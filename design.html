@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSWMC-Competition-Design</title>
+    <style>
+        :root {
+            --bg-color: #0b0c15;
+            --line-color: #4a4e69;
+            --node-bg: rgba(30, 30, 40, 0.95);
+            
+            /* 層級顏色系統 */
+            --root-color: #ffffff;
+            --l1-prevention: #00f3ff; /* 青色 - 預防 */
+            --l1-detection: #bc13fe;  /* 紫色 - 偵測 */
+            --l1-response: #ff0055;   /* 紅色 - 響應 */
+            --l1-infra: #ffd700;      /* 金色 - 基礎設施 */
+            
+            --tag-bg: rgba(255,255,255,0.08);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 243, 255, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(188, 19, 254, 0.03) 0%, transparent 20%);
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            min-height: 100vh;
+            overflow-x: auto; /* 允許橫向滾動 */
+        }
+
+        h1 {
+            background: linear-gradient(90deg, var(--l1-prevention), var(--l1-detection));
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            position: relative;
+        }
+        
+        h1::after {
+            content: 'EXPANDED EDITION';
+            display: block;
+            font-size: 0.8rem;
+            letter-spacing: 8px;
+            color: rgba(255,255,255,0.3);
+            -webkit-text-fill-color: rgba(255,255,255,0.3);
+            margin-top: 5px;
+        }
+
+        /* --- 樹狀圖核心邏輯 --- */
+        .tree {
+            display: flex;
+            justify-content: center;
+            min-width: 100%;
+            padding-bottom: 50px;
+        }
+
+        .tree ul {
+            padding-top: 25px; 
+            position: relative;
+            transition: all 0.5s;
+            display: flex;
+            justify-content: center;
+        }
+
+        .tree li {
+            float: left; text-align: center;
+            list-style-type: none;
+            position: relative;
+            padding: 25px 5px 0 5px; /* 減少左右間距以容納更多分支 */
+            transition: all 0.5s;
+        }
+
+        /* 連接線 */
+        .tree li::before, .tree li::after {
+            content: '';
+            position: absolute; top: 0; right: 50%;
+            border-top: 1px solid var(--line-color);
+            width: 50%; height: 25px;
+        }
+        .tree li::after {
+            right: auto; left: 50%;
+            border-left: 1px solid var(--line-color);
+        }
+
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:only-child { padding-top: 0;}
+        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+        
+        .tree li:last-child::before{
+            border-right: 1px solid var(--line-color);
+            border-radius: 0 5px 0 0;
+        }
+        .tree li:first-child::after{
+            border-radius: 5px 0 0 0;
+        }
+
+        .tree ul ul::before{
+            content: '';
+            position: absolute; top: 0; left: 50%;
+            border-left: 1px solid var(--line-color);
+            width: 0; height: 25px;
+        }
+
+        /* --- 節點卡片樣式 --- */
+        .node {
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 13px;
+            display: inline-block;
+            border-radius: 6px;
+            background: var(--node-bg);
+            transition: all 0.3s;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            min-width: 130px;
+            max-width: 160px;
+            backdrop-filter: blur(4px);
+            z-index: 2;
+        }
+
+        .node:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        /* 標題與描述 */
+        .title { display: block; font-weight: 700; margin-bottom: 4px; font-size: 1.05em; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
+        .desc { display: block; font-size: 0.8em; color: #aaa; margin-bottom: 6px; line-height: 1.2;}
+        
+        /* Tag 標籤 */
+        .tag-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+        .tag {
+            font-size: 0.7rem;
+            background: var(--tag-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid rgba(255,255,255,0.05);
+            color: #ccc;
+        }
+
+        /* --- 層級配色 (通過 class 控制) --- */
+        
+        /* Root */
+        .root-node {
+            font-size: 1.4rem;
+            padding: 20px 40px;
+            border: 2px solid white;
+            box-shadow: 0 0 25px rgba(255,255,255,0.1);
+            min-width: 200px;
+        }
+
+        /* Level 1 Categories */
+        .cat-prev .node { border-top: 3px solid var(--l1-prevention); box-shadow: 0 5px 15px rgba(0, 243, 255, 0.15); }
+        .cat-infra .node { border-top: 3px solid var(--l1-infra); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.15); }
+        .cat-detect .node { border-top: 3px solid var(--l1-detection); box-shadow: 0 5px 15px rgba(188, 19, 254, 0.15); }
+        .cat-resp .node { border-top: 3px solid var(--l1-response); box-shadow: 0 5px 15px rgba(255, 0, 85, 0.15); }
+
+        /* Level 2 & 3 Inheritance lines (Optional visual flair) */
+        .cat-prev ul li::before, .cat-prev ul li::after, .cat-prev ul ul::before { border-color: rgba(0, 243, 255, 0.3); }
+        .cat-infra ul li::before, .cat-infra ul li::after, .cat-infra ul ul::before { border-color: rgba(255, 215, 0, 0.3); }
+        .cat-detect ul li::before, .cat-detect ul li::after, .cat-detect ul ul::before { border-color: rgba(188, 19, 254, 0.3); }
+        .cat-resp ul li::before, .cat-resp ul li::after, .cat-resp ul ul::before { border-color: rgba(255, 0, 85, 0.3); }
+
+        /* 分隔線 */
+        .divider {
+            width: 90%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--line-color), transparent);
+            margin: 60px 0;
+        }
+
+        /* 路線圖樣式微調 */
+        .roadmap-q { font-weight: bold; color: var(--l1-prevention); }
+    </style>
+</head>
+<body>
+
+    <h1>Web 3.0 全域免疫系統架構 (Total Defense)</h1>
+
+    <div class="tree">
+        <ul>
+            <li>
+                <div class="node root-node">
+                    <span class="title">免疫生態中心</span>
+                    <span class="desc">Integrated Security Core</span>
+                </div>
+                <ul>
+                    
+                    <li class="cat-prev">
+                        <div class="node">
+                            <span class="title">用戶免疫層</span>
+                            <span class="desc">Prevention</span>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <span class="title">身份與憑證</span>
+                                    <div class="tag-container">
+                                        <span class="tag">SBT 榮譽</span>
+                                        <span class="tag">ZK-DID</span>
+                                    </div>
+                                </div>
+                                <ul>
+                                     <li><div class="node"><span class="title">鏈上信譽分</span><span class="desc">Credit Score</span></div></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <span class="title">實戰教育</span>
+                                    <div class="tag-container">
+                                        <span class="tag">VR 演練</span>
+                                        <span class="tag">L2E 挖礦</span>
+                                    </div>
+                                </div>
+                                <ul>
+                                    <li><div class="node"><span class="title">釣魚模擬器</span><span class="desc">Phishing Sim</span></div></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="cat-infra">
+                        <div class="node">
+                            <span class="title">網絡基礎層</span>
+                            <span class="desc">Infrastructure</span>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <span class="title">前端防護</span>
+                                    <div class="tag-container">
+                                        <span class="tag">防劫持</span>
+                                        <span class="tag">IPFS 備份</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <span class="title">RPC 防火牆</span>
+                                    <div class="tag-container">
+                                        <span class="tag">惡意節點過濾</span>
+                                        <span class="tag">MEV 保護</span>
+                                    </div>
+                                </div>
+                                <ul>
+                                    <li><div class="node"><span class="title">隱私交易池</span><span class="desc">Private Mempool</span></div></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="cat-detect">
+                        <div class="node">
+                            <span class="title">AI 智能攔截</span>
+                            <span class="desc">Detection</span>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <span class="title">深度模型</span>
+                                    <div class="tag-container">
+                                        <span class="tag">GNN 圖神經</span>
+                                        <span class="tag">LSTM 時序</span>
+                                    </div>
+                                </div>
+                                <ul>
+                                    <li><div class="node"><span class="title">Z-Score</span><span class="desc">異常評分</span></div></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <span class="title">行為分析</span>
+                                    <div class="tag-container">
+                                        <span class="tag">同質化女巫</span>
+                                        <span class="tag">資金流追蹤</span>
+                                    </div>
+                                </div>
+                                <ul>
+                                    <li><div class="node"><span class="title">關聯圖譜</span><span class="desc">Knowledge Graph</span></div></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="cat-resp">
+                        <div class="node">
+                            <span class="title">鏈上處置層</span>
+                            <span class="desc">Response</span>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <span class="title">智能管控</span>
+                                    <div class="tag-container">
+                                        <span class="tag">合約熔斷</span>
+                                        <span class="tag">EIP-7702</span>
+                                    </div>
+                                </div>
+                                <ul>
+                                    <li><div class="node"><span class="title">暫停守護者</span><span class="desc">Pause Guardian</span></div></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <span class="title">資產救援</span>
+                                    <div class="tag-container">
+                                        <span class="tag">社交恢復</span>
+                                        <span class="tag">白帽攔截</span>
+                                    </div>
+                                </div>
+                                <ul>
+                                    <li><div class="node"><span class="title">DeFi 保險</span><span class="desc">Coverage</span></div></li>
+                                    <li><div class="node"><span class="title">賞金 DAO</span><span class="desc">Bounty</span></div></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="divider"></div>
+
+    <h1>戰略路線圖 (Strategic Roadmap)</h1>
+    <div class="tree">
+        <ul>
+            <li>
+                <div class="node root-node" style="border-color: #ffd700;">
+                    <span class="title">2026+ 願景</span>
+                    <span class="desc">Zero Trust Society</span>
+                </div>
+                <ul>
+                    <li>
+                        <div class="node">
+                            <span class="title roadmap-q">2025 Q1-Q2</span>
+                            <span class="desc">基礎建設 (Infra)</span>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <span class="title">數據層</span>
+                                    <span class="tag">黑名單庫建立</span>
+                                    <span class="tag">標籤系統上線</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <span class="title">工具層</span>
+                                    <span class="tag">VR 模擬器 Alpha</span>
+                                    <span class="tag">錢包插件 Beta</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <div class="node">
+                            <span class="title roadmap-q">2025 Q3-Q4</span>
+                            <span class="desc">生態整合 (Integration)</span>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <span class="title">標準化</span>
+                                    <span class="tag">SBT 協議通證化</span>
+                                    <span class="tag">EIP 安全標準</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <span class="title">合作夥伴</span>
+                                    <span class="tag">MetaMask 集成</span>
+                                    <span class="tag">交易所 API 串接</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <div class="node">
+                            <span class="title roadmap-q">2026+</span>
+                            <span class="desc">自主防禦 (Autonomous)</span>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <span class="title">全自動化</span>
+                                    <span class="tag">AI 自動風控</span>
+                                    <span class="tag">鏈上自動審計</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <span class="title">合規隱私</span>
+                                    <span class="tag">ZK-KyC 合規</span>
+                                    <span class="tag">無感安全環境</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>

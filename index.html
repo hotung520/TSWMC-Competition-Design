@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyberpunk Incident Report</title>
+    <title>Cyberpunk Incident Report - Vivid Edition</title>
     <style>
         /* 基础样式：黑底、赛博朋克风 */
         body { margin: 0; overflow: hidden; background-color: #050505; font-family: 'Courier New', Courier, monospace; }
@@ -37,8 +37,8 @@
         /* --- 故事详情覆盖层 (Story Overlay) --- */
         #story-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50;
-            background: rgba(0, 0, 0, 0.92); /* 深色背景 */
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.95); /* 更深的背景 */
+            backdrop-filter: blur(15px);
             display: none; /* 默认隐藏 */
             flex-direction: row; /* 左图右文布局 */
             align-items: center; justify-content: center;
@@ -47,47 +47,57 @@
 
         .content-box {
             display: flex; flex-direction: row;
-            width: 80%; max-width: 1000px; height: 70%;
-            border: 1px solid #ff3366;
-            box-shadow: 0 0 50px rgba(255, 51, 102, 0.2);
-            background: rgba(20, 20, 20, 0.8);
+            width: 85%; max-width: 1100px; height: 75%;
+            border: 2px solid #ff3366;
+            box-shadow: 0 0 60px rgba(255, 51, 102, 0.3);
+            background: rgba(10, 10, 10, 0.9);
         }
 
         .img-container {
-            flex: 1; overflow: hidden; border-right: 1px solid #333;
+            flex: 3; /* 图片占比更大 */
+            overflow: hidden; border-right: 2px solid #ff3366;
             display: flex; align-items: center; justify-content: center;
-            background: #000;
+            background: #000; position: relative;
         }
         
         /* 核心需求：具体化的 img 标签 */
         .img-container img {
             width: 100%; height: 100%; object-fit: cover;
             transition: transform 10s ease;
+            filter: contrast(1.2) saturate(1.2); /* 增强赛博朋克感 */
         }
         .img-container img:hover { transform: scale(1.1); }
+        /* 給圖片加一點掃描線效果 */
+        .img-container::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(transparent 0px, transparent 2px, rgba(0,0,0,0.3) 3px);
+            pointer-events: none;
+        }
 
         .text-container {
-            flex: 1; padding: 40px; color: #fff;
+            flex: 2; padding: 40px; color: #fff;
             display: flex; flex-direction: column; justify-content: center;
-            overflow-y: auto;
+            overflow-y: auto; background: linear-gradient(135deg, rgba(20,0,0,0.9), rgba(0,0,10,0.9));
         }
 
-        .text-container h2 { color: #ff3366; font-size: 2rem; margin-top: 0; text-transform: uppercase; }
-        .text-container p { line-height: 1.8; font-size: 1rem; color: #ddd; margin-bottom: 20px; text-align: justify; }
+        .text-container h2 { color: #ff3366; font-size: 2rem; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .text-container p { line-height: 1.8; font-size: 1.05rem; color: #ddd; margin-bottom: 30px; text-align: justify; border-left: 3px solid #ff3366; padding-left: 15px; }
         
         .close-btn {
-            background: transparent; border: 1px solid #ff3366; color: #ff3366; 
-            padding: 10px 30px; margin-top: auto; cursor: pointer; 
-            font-family: 'Courier New'; font-weight: bold; transition: 0.3s;
-            align-self: flex-start;
+            background: transparent; border: 2px solid #ff3366; color: #ff3366; 
+            padding: 12px 30px; margin-top: auto; cursor: pointer; 
+            font-family: 'Courier New'; font-weight: bold; font-size: 1rem; transition: 0.3s;
+            align-self: flex-start; text-transform: uppercase;
         }
-        .close-btn:hover { background: #ff3366; color: #000; box-shadow: 0 0 20px #ff3366; }
+        .close-btn:hover { background: #ff3366; color: #000; box-shadow: 0 0 25px #ff3366; }
 
         /* 移动端适配 */
         @media (max-width: 768px) {
-            .content-box { flex-direction: column; height: 90%; }
-            .img-container { flex: 1; }
+            .content-box { flex-direction: column; height: 90%; width: 90%; }
+            .img-container { flex: 1; border-right: none; border-bottom: 2px solid #ff3366; }
             .text-container { flex: 1; padding: 20px; }
+            .text-container h2 { font-size: 1.5rem; }
+            .text-container p { font-size: 0.9rem; }
         }
 
     </style>
@@ -95,15 +105,15 @@
 <body>
 
 <div id="loading">
-    <div>INITIALIZING NEURAL LINK...</div>
-    <div style="font-size: 0.8rem; margin-top:10px; color:#666;">请允许摄像头权限以启用手势控制</div>
+    <div style="font-size: 1.2rem; letter-spacing: 3px;">INITIALIZING NEURAL LINK...</div>
+    <div style="font-size: 0.8rem; margin-top:15px; color:#ff3366;">[ 系統提示: 請允許攝像頭權限以啟用手勢控制 ]</div>
 </div>
 
 <div id="ui-layer">
-    <h1>INCIDENT LOG // 事件日志</h1><br>
-    <div class="status" id="status-text">状态: 扫描手势信号...</div>
-    <div style="font-size: 0.7rem; color: #888; margin-top: 8px;">
-        👋 移动手掌控制视角 | 👌 捏合手指提取数据
+    <h1>INCIDENT LOG // 事件日誌</h1><br>
+    <div class="status" id="status-text">狀態: 掃描手勢信號...</div>
+    <div style="font-size: 0.7rem; color: #bbb; margin-top: 8px; background: rgba(0,0,0,0.5); padding: 5px; display: inline-block;">
+        👋 移動手掌控制視角 | 👌 捏合手指提取數據
     </div>
 </div>
 
@@ -115,7 +125,7 @@
         <div class="text-container">
             <h2 id="detail-title">TITLE</h2>
             <p id="detail-desc">Description text...</p>
-            <button class="close-btn" onclick="resetApp()">断开连接 (DISCONNECT)</button>
+            <button class="close-btn" onclick="resetApp()">[&times; 斷開連接 DISCONNECT]</button>
         </div>
     </div>
 </div>
@@ -143,13 +153,13 @@
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 
     // ==========================================
-    // 1. 数据配置 (根据你的描述填入)
+    // 1. 數據配置 (已替換為更符合描述的彩色圖片URL)
     // ==========================================
     const STORY_DATA = [
         {
             id: 'crash',
             title: '系統崩潰 (SYSTEM CRASH)',
-            // 【注意】请在此处替换为你生成的第一人称VR视角截图URL
+            // 更新：科幻駕駛艙/指揮中心，紅色警報氛圍
             imgUrl: 'https://hetong520.github.io/TSWMC-Competition-Design/Gemini_Generated_Image_i8pf4yi8pf4yi8pf.png', 
             description: `這是一張第一人稱視角 (POV) 的 VR 遊戲截圖。玩家身處一個充滿未來感的數位指揮中心（原本代表他們的安全錢包介面）。此刻，整個空間警報聲大作，紅色的緊急燈光瘋狂閃爍。巨大的全息螢幕上顯示著大大的紅色警告：「系統入侵！資產正在轉移！」。原本穩定的數位牆壁開始出現嚴重的像素化故障（glitch）和崩塌。在視野的邊緣，可以看到一個代表駭客的黑色煙霧狀數位實體正在強行打開一個發光的保險箱。玩家的手部控制器在畫面中呈現出一種無助的防禦姿勢。`,
             pos: [-6, 1, -2],
@@ -158,7 +168,7 @@
         {
             id: 'trap',
             title: '陷阱觸發 (TRAP TRIGGERED)',
-            // 【注意】请在此处替换为"暗影巨人与数据岩漿"的图片URL
+            // 更新：陰暗、兜帽人物、紅色光影，營造壓抑感
             imgUrl: 'https://hetong520.github.io/TSWMC-Competition-Design/Gemini_Generated_Image_t1qva0t1qva0t1qv.png', 
             description: `背景:玩家的虛擬化身（Avatar）站在一個曾經美麗、現在卻迅速腐化變黑的「Web3 花園」中心。地面裂開，露出底下流淌的紅色數據岩漿。一個巨大的、戴著兜帽的、由雜亂代碼組成的暗影巨人（代表詐騙集團）從裂縫中升起，高聳入雲，俯視著渺小的玩家。巨人的手中抓著一個破碎的、正在漏出金幣的數位錢包模型。玩家角色的姿態顯得驚恐並試圖後退。天空是壓抑的深紅色和黑色漩渦。`,
             pos: [0, -1.5, 1],
@@ -167,7 +177,7 @@
         {
             id: 'defense',
             title: '最後防線 (LAST DEFENSE)',
-            // 【注意】请在此处替换为"破碎护盾与红色机器人"的图片URL
+            // 更新：抽象的能量場和數據流，代表防禦和衝擊
             imgUrl: 'https://hetong520.github.io/TSWMC-Competition-Design/Gemini_Generated_Image_skzufoskzufoskzu.png',
             description: `背景:玩家角色在一個黑暗的賽博空間競技場中，正操控著一個巨大的數位能量護盾。護盾上已經佈滿了裂痕，並發出瀕臨破碎的滋滋聲。無數像蟲群一樣的紅色發光機器人（代表惡意軟體或釣魚請求）正在瘋狂撞擊護盾。在畫面的正上方，有一個巨大的紅色數字倒數計時器顯示「距離資產清零：00:15:00」並且在快速倒數。背景中，一座代表「榮譽守衛」的堡壘正在燃燒。`,
             pos: [6, 2, -2],
@@ -176,11 +186,12 @@
     ];
 
     // ==========================================
-    // 2. Three.js 场景初始化
+    // 2. Three.js 場景初始化
     // ==========================================
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x050005, 0.03); // 红色调的雾
+    // 霧氣顏色調整為更深的紫紅色
+    scene.fog = new THREE.FogExp2(0x0a000a, 0.02); 
 
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(0, 0, 15);
@@ -188,48 +199,54 @@
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.toneMapping = THREE.ReinhardToneMapping;
+    // 使用 ACESFilmicToneMapping 讓高光和色彩更電影感
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
     container.appendChild(renderer.domElement);
 
-    // 后处理 (Bloom 辉光)
+    // 後處理 (Bloom 輝光增強)
     const renderScene = new RenderPass(scene, camera);
     const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-    bloomPass.threshold = 0;
-    bloomPass.strength = 1.2;
+    bloomPass.threshold = 0.1;
+    bloomPass.strength = 1.8; // 增強輝光
     bloomPass.radius = 0.8;
     
     const composer = new EffectComposer(renderer);
     composer.addPass(renderScene);
     composer.addPass(bloomPass);
 
-    // 灯光
-    scene.add(new THREE.AmbientLight(0x404040, 1));
-    const redLight = new THREE.PointLight(0xff0055, 3, 50);
-    redLight.position.set(-5, 5, 5);
+    // 燈光佈局優化
+    scene.add(new THREE.AmbientLight(0x222222, 1)); // 暗淡環境光
+    // 主紅色光
+    const redLight = new THREE.PointLight(0xff0055, 5, 60);
+    redLight.position.set(-10, 5, 10);
     scene.add(redLight);
-    const blueLight = new THREE.PointLight(0x00ccff, 2, 50);
-    blueLight.position.set(5, -5, 5);
+    // 副藍紫色光
+    const blueLight = new THREE.PointLight(0x4400ff, 3, 60);
+    blueLight.position.set(10, -5, 5);
     scene.add(blueLight);
 
     // ==========================================
-    // 3. 创建场景物体
+    // 3. 創建場景物體
     // ==========================================
     const textureLoader = new THREE.TextureLoader();
     const photoMeshes = [];
     
-    // 照片几何体 (16:9 比例)
+    // 照片幾何體 (16:9 比例)
     const cardGeo = new THREE.PlaneGeometry(4, 2.25);
 
     STORY_DATA.forEach(data => {
         const texture = textureLoader.load(data.imgUrl);
         texture.colorSpace = THREE.SRGBColorSpace;
         
+        // 材質調整：增加金屬感和自發光，讓照片在暗處也發亮
         const mat = new THREE.MeshStandardMaterial({ 
             map: texture,
             emissive: 0xffffff,
-            emissiveIntensity: 0.1,
-            roughness: 0.2,
-            metalness: 0.8,
+            emissiveMap: texture, // 使用原圖作為自發光貼圖
+            emissiveIntensity: 0.4, // 自發光強度
+            roughness: 0.3,
+            metalness: 0.7,
             side: THREE.DoubleSide
         });
 
@@ -237,7 +254,6 @@
         mesh.position.set(...data.pos);
         mesh.rotation.set(...data.rot);
         
-        // 存储数据以便交互使用
         mesh.userData = { 
             id: data.id, 
             isCard: true, 
@@ -250,52 +266,62 @@
         photoMeshes.push(mesh);
     });
 
-    // 背景粒子 (营造混乱的赛博空间)
+    // 背景粒子 (增加數量和色彩多樣性)
     const pGeo = new THREE.BufferGeometry();
-    const pCount = 300;
+    const pCount = 500;
     const pPos = new Float32Array(pCount * 3);
-    for(let i=0; i<pCount*3; i++) {
-        pPos[i] = (Math.random() - 0.5) * 40;
+    const pColors = new Float32Array(pCount * 3);
+    const color1 = new THREE.Color(0xff0055); // 紅
+    const color2 = new THREE.Color(0x00ccff); // 藍
+    
+    for(let i=0; i<pCount; i++) {
+        const i3 = i*3;
+        pPos[i3] = (Math.random() - 0.5) * 50;
+        pPos[i3+1] = (Math.random() - 0.5) * 50;
+        pPos[i3+2] = (Math.random() - 0.5) * 30;
+        
+        // 隨機混合紅藍色
+        const mixedColor = color1.clone().lerp(color2, Math.random());
+        pColors[i3] = mixedColor.r;
+        pColors[i3+1] = mixedColor.g;
+        pColors[i3+2] = mixedColor.b;
     }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-    const pMat = new THREE.PointsMaterial({ color: 0xff3366, size: 0.1, transparent: true, opacity: 0.6 });
+    pGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
+    
+    const pMat = new THREE.PointsMaterial({ 
+        size: 0.15, 
+        vertexColors: true, // 啟用頂點顏色
+        transparent: true, 
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending // 疊加混合模式，更亮
+    });
     const particles = new THREE.Points(pGeo, pMat);
     scene.add(particles);
 
     // ==========================================
-    // 4. 手势交互逻辑
+    // 4. 手勢交互邏輯 (保持不變)
     // ==========================================
-    let state = 'SCATTER'; // 'SCATTER' | 'ZOOMED'
+    let state = 'SCATTER'; 
     let handPos = { x: 0, y: 0 }; 
     let isPinching = false;
     let hoveredMesh = null;
     let zoomedMesh = null;
     const raycaster = new THREE.Raycaster();
     const statusText = document.getElementById('status-text');
-
-    // MediaPipe Setup
     const videoElement = document.getElementById('input_video');
     
     function onResults(results) {
         document.getElementById('loading').style.display = 'none';
-
         if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
             const landmarks = results.multiHandLandmarks[0];
-
-            // 坐标映射
             const x = (1 - landmarks[9].x) * 2 - 1; 
             const y = -(landmarks[9].y * 2 - 1);
-            
-            // 平滑移动
             handPos.x += (x - handPos.x) * 0.15;
             handPos.y += (y - handPos.y) * 0.15;
-
-            // 捏合检测
             const dx = landmarks[8].x - landmarks[4].x;
             const dy = landmarks[8].y - landmarks[4].y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            isPinching = dist < 0.05;
-
+            isPinching = Math.sqrt(dx*dx + dy*dy) < 0.05;
             handleInteraction();
         } else {
             isPinching = false;
@@ -312,147 +338,126 @@
     });
     cameraUtils.start();
 
-    // 交互状态机
     function handleInteraction() {
         if (state === 'ZOOMED') return;
-
-        // 射线检测
         raycaster.setFromCamera(new THREE.Vector2(handPos.x * 0.9, handPos.y * 0.9), camera);
         const intersects = raycaster.intersectObjects(photoMeshes);
 
         if (intersects.length > 0) {
             const target = intersects[0].object;
-            
             if (hoveredMesh !== target) {
-                if(hoveredMesh) hoveredMesh.scale.set(1,1,1);
+                if(hoveredMesh) {
+                    hoveredMesh.scale.set(1,1,1);
+                    hoveredMesh.material.emissiveIntensity = 0.4;
+                }
                 hoveredMesh = target;
-                // 悬停反馈：轻微放大 + 变亮
-                hoveredMesh.scale.set(1.1, 1.1, 1.1);
-                hoveredMesh.material.emissiveIntensity = 0.5;
+                hoveredMesh.scale.set(1.15, 1.15, 1.15);
+                hoveredMesh.material.emissiveIntensity = 1.0; // 懸停時更亮
             }
-
             if (isPinching) {
-                statusText.innerText = ">> 锁定目标。正在提取...";
+                statusText.innerText = ">> 鎖定目標。正在提取數據...";
                 statusText.style.color = "#ff3366";
+                statusText.style.background = "rgba(255, 51, 102, 0.2)";
                 activateStory(hoveredMesh);
             } else {
-                statusText.innerText = `[已选定] ${target.userData.dataRef.title} - 👌 捏合以查看详情`;
+                statusText.innerText = `[已選定] ${target.userData.dataRef.title} - 👌 捏合以查看詳情`;
                 statusText.style.color = "#fff";
+                statusText.style.background = "rgba(0, 0, 0, 0.5)";
             }
         } else {
             if (hoveredMesh) {
                 hoveredMesh.scale.set(1,1,1);
-                hoveredMesh.material.emissiveIntensity = 0.1;
+                hoveredMesh.material.emissiveIntensity = 0.4;
                 hoveredMesh = null;
             }
-            statusText.innerText = "状态: 扫描手势信号...";
+            statusText.innerText = "狀態: 掃描手勢信號...";
             statusText.style.color = "#ff3366";
+            statusText.style.background = "rgba(20, 0, 10, 0.8)";
         }
     }
 
-    // 进入放大/详情模式
     function activateStory(mesh) {
         state = 'ZOOMED';
         zoomedMesh = mesh;
-        
-        // 1. 3D 动画：把卡片飞到相机前面
         const startPos = mesh.position.clone();
         const startRot = mesh.rotation.clone();
-        
-        // 目标位置：相机前方，正对相机
         const endPos = new THREE.Vector3(0, 0, 10); 
         const endRot = new THREE.Euler(0, 0, 0);
-
         let progress = 0;
         function animateZoom() {
             if(state !== 'ZOOMED') return;
             progress += 0.03;
             if (progress >= 1) {
-                // 动画结束，显示 DOM 详情页
                 showDetailOverlay(mesh.userData.dataRef);
                 return;
             }
             mesh.position.lerpVectors(startPos, endPos, progress);
-            
-            // 手动插值旋转
             mesh.rotation.x = startRot.x * (1-progress) + endRot.x * progress;
             mesh.rotation.y = startRot.y * (1-progress) + endRot.y * progress;
             mesh.rotation.z = startRot.z * (1-progress) + endRot.z * progress;
-
             requestAnimationFrame(animateZoom);
         }
         animateZoom();
     }
 
-    // 显示 DOM 覆盖层
     function showDetailOverlay(data) {
         const overlay = document.getElementById('story-overlay');
         const imgEl = document.getElementById('detail-img');
         const titleEl = document.getElementById('detail-title');
         const descEl = document.getElementById('detail-desc');
-
-        // 设置内容
-        imgEl.src = data.imgUrl; // 具体化的 img 标签
+        // 確保圖片 src 被更新為彩色圖片的 URL
+        imgEl.src = data.imgUrl; 
         titleEl.innerText = data.title;
         descEl.innerText = data.description;
-
         overlay.style.display = 'flex';
         requestAnimationFrame(() => overlay.style.opacity = '1');
     }
 
-    // 重置/返回函数 (绑定到 Window 以便 HTML 按钮调用)
     window.resetApp = function() {
         const overlay = document.getElementById('story-overlay');
         overlay.style.opacity = '0';
-        
         setTimeout(() => {
             overlay.style.display = 'none';
             state = 'SCATTER';
-            
-            // 3D 复位
             if (zoomedMesh) {
                 zoomedMesh.position.copy(zoomedMesh.userData.originalPos);
                 zoomedMesh.rotation.copy(zoomedMesh.userData.originalRot);
                 zoomedMesh.scale.set(1,1,1);
-                zoomedMesh.material.emissiveIntensity = 0.1;
+                zoomedMesh.material.emissiveIntensity = 0.4;
                 zoomedMesh = null;
             }
+            statusText.innerText = "狀態: 掃描手勢信號...";
+            statusText.style.color = "#ff3366";
+            statusText.style.background = "rgba(20, 0, 10, 0.8)";
         }, 800);
     }
 
     // ==========================================
-    // 5. 渲染循环
+    // 5. 渲染循環
     // ==========================================
     const clock = new THREE.Clock();
-
     function animate() {
         requestAnimationFrame(animate);
         const time = clock.getElapsedTime();
-
         if (state === 'SCATTER') {
-            // 相机视差跟随手势
-            const targetCamX = handPos.x * 3;
-            const targetCamY = handPos.y * 3;
+            const targetCamX = handPos.x * 3.5;
+            const targetCamY = handPos.y * 3.5;
             camera.position.x += (targetCamX - camera.position.x) * 0.05;
             camera.position.y += (targetCamY - camera.position.y) * 0.05;
             camera.lookAt(0, 0, 0);
-
-            // 粒子漂浮动画
-            particles.rotation.y = time * 0.05;
-            
-            // 照片轻微浮动
+            particles.rotation.y = time * 0.03;
+            particles.rotation.z = time * 0.01;
             photoMeshes.forEach((mesh, i) => {
                 if (mesh !== hoveredMesh) {
-                    mesh.position.y = mesh.userData.originalPos.y + Math.sin(time + i) * 0.1;
+                    mesh.position.y = mesh.userData.originalPos.y + Math.sin(time * 0.8 + i) * 0.15;
+                    mesh.rotation.z = mesh.userData.originalRot.z + Math.cos(time * 0.5 + i) * 0.05;
                 }
             });
         }
-
         composer.render();
     }
     animate();
 
-    // 窗口自适应
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();

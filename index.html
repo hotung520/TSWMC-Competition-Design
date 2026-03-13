@@ -107,13 +107,15 @@
 <div id="loading">
     <div style="font-size: 1.2rem; letter-spacing: 3px;">INITIALIZING NEURAL LINK...</div>
     <div style="font-size: 0.8rem; margin-top:15px; color:#ff3366;">[ 系統提示: 請允許攝像頭權限以啟用手勢控制 ]</div>
+    <a href="design.html">design-pages</a>
 </div>
 
 <div id="ui-layer">
-    <h1>INCIDENT LOG // 事件日誌</h1><br>
+    <h1>INCIDENT LOG // 事件日誌 </h1><br>
+    
     <div class="status" id="status-text">狀態: 掃描手勢信號...</div>
     <div style="font-size: 0.7rem; color: #bbb; margin-top: 8px; background: rgba(0,0,0,0.5); padding: 5px; display: inline-block;">
-        👋 移動手掌控制視角 | 👌 捏合手指提取數據
+        👋 移動手掌控制視角 | 👌 捏合手指提取數據 <a href="design.html">design-pages</a>
     </div>
 </div>
 
@@ -158,9 +160,8 @@
     const STORY_DATA = [
         {
             id: 'crash',
-            title: '系統崩潰 (SYSTEM CRASH)',
-            // 更新：科幻駕駛艙/指揮中心，紅色警報氛圍
-            imgUrl: 'https://hetong520.github.io/TSWMC-Competition-Design/Gemini_Generated_Image_i8pf4yi8pf4yi8pf.png', 
+            title: '系統崩潰 (SYSTEM CRASH)',            // 更新：科幻駕駛艙/指揮中心，紅色警報氛圍
+            imgUrl: 'Gemini_Generated_Image_i8pf4yi8pf4yi8pf.png', 
             description: `這是一張第一人稱視角 (POV) 的 VR 遊戲截圖。玩家身處一個充滿未來感的數位指揮中心（原本代表他們的安全錢包介面）。此刻，整個空間警報聲大作，紅色的緊急燈光瘋狂閃爍。巨大的全息螢幕上顯示著大大的紅色警告：「系統入侵！資產正在轉移！」。原本穩定的數位牆壁開始出現嚴重的像素化故障（glitch）和崩塌。在視野的邊緣，可以看到一個代表駭客的黑色煙霧狀數位實體正在強行打開一個發光的保險箱。玩家的手部控制器在畫面中呈現出一種無助的防禦姿勢。`,
             pos: [-6, 1, -2],
             rot: [0, 0.2, 0]
@@ -169,7 +170,7 @@
             id: 'trap',
             title: '陷阱觸發 (TRAP TRIGGERED)',
             // 更新：陰暗、兜帽人物、紅色光影，營造壓抑感
-            imgUrl: 'https://hetong520.github.io/TSWMC-Competition-Design/Gemini_Generated_Image_t1qva0t1qva0t1qv.png', 
+            imgUrl: 'Gemini_Generated_Image_t1qva0t1qva0t1qv.png', 
             description: `背景:玩家的虛擬化身（Avatar）站在一個曾經美麗、現在卻迅速腐化變黑的「Web3 花園」中心。地面裂開，露出底下流淌的紅色數據岩漿。一個巨大的、戴著兜帽的、由雜亂代碼組成的暗影巨人（代表詐騙集團）從裂縫中升起，高聳入雲，俯視著渺小的玩家。巨人的手中抓著一個破碎的、正在漏出金幣的數位錢包模型。玩家角色的姿態顯得驚恐並試圖後退。天空是壓抑的深紅色和黑色漩渦。`,
             pos: [0, -1.5, 1],
             rot: [0, 0, 0]
@@ -178,7 +179,7 @@
             id: 'defense',
             title: '最後防線 (LAST DEFENSE)',
             // 更新：抽象的能量場和數據流，代表防禦和衝擊
-            imgUrl: 'https://hetong520.github.io/TSWMC-Competition-Design/Gemini_Generated_Image_skzufoskzufoskzu.png',
+            imgUrl: 'Gemini_Generated_Image_skzufoskzufoskzu.png',
             description: `背景:玩家角色在一個黑暗的賽博空間競技場中，正操控著一個巨大的數位能量護盾。護盾上已經佈滿了裂痕，並發出瀕臨破碎的滋滋聲。無數像蟲群一樣的紅色發光機器人（代表惡意軟體或釣魚請求）正在瘋狂撞擊護盾。在畫面的正上方，有一個巨大的紅色數字倒數計時器顯示「距離資產清零：00:15:00」並且在快速倒數。背景中，一座代表「榮譽守衛」的堡壘正在燃燒。`,
             pos: [6, 2, -2],
             rot: [0, -0.2, 0]
